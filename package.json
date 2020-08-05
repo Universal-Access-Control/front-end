@@ -43,7 +43,11 @@
   "dependencies": {
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "styled-components": "^5.1.1",
+    "styled-tools": "^1.7.2",
+    "tailwindcss": "^1.6.2",
+    "twin.macro": "^1.7.0"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^18.2.0",
