@@ -1,7 +1,17 @@
 {
   "name": "front-end",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
+  "description": "Simple dashboard for manage Access Control devices",
+  "author": "Mohammad Moradi <MohammadMRD@hotmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Universal-Access-Control/front-end.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Universal-Access-Control/front-end/issues"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
