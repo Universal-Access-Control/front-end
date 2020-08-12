@@ -6,8 +6,8 @@ import ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/client';
 
 // Main core
-import App from './App';
-import apolloClient from './services/apollo';
+import App from 'App';
+import apolloClient from 'services/apollo';
 
 // CSS styles
 import 'tailwindcss/dist/base.min.css';
