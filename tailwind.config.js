@@ -1,6 +1,7 @@
 module.exports = {
   theme: {
     colors: {
+      white: '#ffffff',
       // INFO COLORS
       infoLight: '#daf0ff',
       info: '#44c3fd',
@@ -86,12 +87,18 @@ module.exports = {
         900: '#2d3131',
       },
     },
+    container: {
+      center: true,
+    },
     extend: {
       gridTemplateRows: {
-        layout: '4rem 1fr',
+        layout: 'auto 1fr',
       },
       gridTemplateColumns: {
-        layout: '4rem 1fr',
+        layout: 'auto 1fr',
+      },
+      fontFamily: {
+        itim: 'Itim, cursive',
       },
     },
   },

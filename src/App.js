@@ -1,7 +1,16 @@
+// React
 import React from 'react';
 
-function App() {
-  return <div className="App">Access Control App</div>;
-}
+// Main core
+import DashboardLayout from 'components/dashboard-layout';
+
+// ==================================
+const App = () => {
+  return (
+    <DashboardLayout>
+      <div>Access Control App</div>
+    </DashboardLayout>
+  );
+};
 
 export default App;
