@@ -1,5 +1,8 @@
 // React
-import React from 'react';
+import React, { Fragment } from 'react';
+
+// React-Router
+import { Link, useLocation } from 'react-router-dom';
 
 // Tailwindcss
 import tw, { styled } from 'twin.macro';
@@ -17,7 +20,7 @@ const SidebarContainer = tw.aside`
   bg-gray-900 text-gray-100
 `;
 const ItemsHeader = tw.h5`font-medium text-lg mx-4 mt-8 mb-4 text-gray-600 uppercase`;
-const Item = styled.li`
+const Item = styled(Link)`
   ${tw`flex items-center p-4 pl-8 text-sm text-gray-300 cursor-pointer hover:bg-gray-800`}
   ${tw`transition-colors duration-300 ease-out`}
   ${ifProp('active', tw`text-gray-100 bg-blue-600 shadow hover:bg-blue-500`, null)}
@@ -33,30 +36,39 @@ const Brand = styled.h1`
 `;
 
 const Sidebar = () => {
+  const location = useLocation();
+  const routes = {
+    Manage: [
+      { title: 'Devices', icon: FiGrid, href: '/devices' },
+      { title: 'Add Device', icon: GoPlus, href: '/devices/add' },
+    ],
+    Account: [
+      { title: 'Profile', icon: FiUser, href: '/profile' },
+      { title: 'Settings', icon: FiSettings, href: '/settings' },
+    ],
+  };
+
   return (
     <SidebarContainer>
       <Brand>
-        Access <span>Control</span>
+        <Link to="/">
+          Access <span>Control</span>
+        </Link>
       </Brand>
-      <ItemsHeader>Manage</ItemsHeader>
-      <ul>
-        <Item active>
-          <GoPlus /> Add Device
-        </Item>
-        <Item>
-          <FiGrid /> Devices
-        </Item>
-      </ul>
-
-      <ItemsHeader>Account</ItemsHeader>
-      <ul>
-        <Item>
-          <FiUser /> Profile
-        </Item>
-        <Item>
-          <FiSettings /> Settings
-        </Item>
-      </ul>
+      {Object.entries(routes).map(([key, values]) => (
+        <Fragment key={key}>
+          <ItemsHeader>{key}</ItemsHeader>
+          <ul>
+            {values.map((route) => (
+              <li key={route.title}>
+                <Item to={route.href} active={+(location.pathname === route.href)}>
+                  <route.icon /> {route.title}
+                </Item>
+              </li>
+            ))}
+          </ul>
+        </Fragment>
+      ))}
     </SidebarContainer>
   );
 };
