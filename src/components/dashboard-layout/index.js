@@ -9,18 +9,21 @@ import DashboardHeader from 'components/dashboard-layout/header';
 import Sidebar from 'components/dashboard-layout/sidebar';
 
 // ===========================================================
-const GridContainer = tw.main`bg-gray-100 h-screen text-gray-900`;
+const GridContainer = tw.section`bg-gray-100 h-screen text-gray-700 font-sans`;
+const MainContainer = tw.main`ml-48 p-8`;
+const Container = tw.div`container sm:max-w-full md:max-w-full`;
 
 const DashboardLayout = ({ children }) => {
   return (
     <GridContainer>
       <Sidebar>sidebar</Sidebar>
-      <main tw="ml-48 p-4">
-        <DashboardHeader />
-        <div tw="container">{children}</div>
-      </main>
+      <MainContainer>
+        <Container>
+          <DashboardHeader />
+          {children}
+        </Container>
+      </MainContainer>
     </GridContainer>
   );
 };
-
 export default DashboardLayout;

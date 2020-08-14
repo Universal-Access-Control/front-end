@@ -7,33 +7,38 @@ import tw, { styled } from 'twin.macro';
 // React-icons
 import { FiBell, FiMail } from 'react-icons/fi';
 
+// Styled-Tools
+import { ifProp } from 'styled-tools';
+
 // ===============================================
-const HeaderContainer = tw.header`container mb-4`;
+const HeaderContainer = tw.header`mb-4 shadow px-6 py-3 bg-white rounded-lg`;
 const Flex = tw.div`flex justify-between items-center`;
-const ContentWrapper = tw(Flex)`px-4 py-2 bg-white rounded-md shadow-md`;
-const Avatar = tw.img`w-12 h-12 rounded-full border-2 border-red-400`;
-const Username = tw.span`mx-4 font-semibold text-sm`;
-const Notification = styled.div`
-  ${tw`flex`}
-  svg {
-    ${tw`w-8 h-8 p-1 mr-2 text-gray-800 rounded-full cursor-pointer`}
-    ${tw`hover:bg-red-400 hover:text-white`}
-  }
+const Avatar = tw.img`w-10 h-10 rounded-full border-2 border-gray-400`;
+const Button = styled.button`
+  ${tw`hidden px-2 py-1 mx-1 text-sm text-gray-600 rounded-lg md:block`}
+  ${tw`transition-colors duration-300`}
+  ${tw`hocus:(text-gray-700 bg-gray-200 outline-none)`}
+  ${ifProp({ border: 'rounded' }, tw`rounded-full`, null)}
+  ${ifProp({ variant: 'icon' }, tw`py-2 text-xl`, null)}
 `;
 
 const DashboardHeader = () => {
   return (
     <HeaderContainer>
-      <ContentWrapper>
-        <Notification>
-          <FiBell />
-          <FiMail />
-        </Notification>
+      <Flex>
         <Flex>
-          <Username>Mohammad</Username>
+          <Button type="button" border="rounded" variant="icon">
+            <FiBell />
+          </Button>
+          <Button type="button" border="rounded" variant="icon">
+            <FiMail />
+          </Button>
+        </Flex>
+        <Flex>
+          <Button>Mohammad</Button>
           <Avatar src="https://i.pravatar.cc/150?img=12" alt="name" />
         </Flex>
-      </ContentWrapper>
+      </Flex>
     </HeaderContainer>
   );
 };
