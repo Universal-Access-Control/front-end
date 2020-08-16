@@ -5,7 +5,7 @@ import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 
 // Tailwindcss
-import tw, { styled } from 'twin.macro';
+import tw, { styled, theme } from 'twin.macro';
 
 // Styled-tools
 import { ifProp } from 'styled-tools';
@@ -15,6 +15,9 @@ import { truncate } from 'lodash';
 
 // React-Icons
 import { FiSettings } from 'react-icons/fi';
+
+// React-Content-Loader
+import ContentLoader from 'react-content-loader';
 
 // ===========================================
 const ALL_DEVICES = gql`
@@ -51,15 +54,35 @@ const DeviceSettingButton = tw.button`
   hover:bg-gray-800
 `;
 
+const DeviceLoader = () => (
+  <ContentLoader
+    speed={3}
+    viewBox="0 0 100 90"
+    backgroundColor={theme`colors.gray.200`}
+    foregroundColor={theme`colors.gray.100`}
+  >
+    {/* borders */}
+    <rect x="0" y="0" rx="2" ry="2" width="100" height="5" />
+    <rect x="0" y="85" rx="2" ry="2" width="100" height="5" />
+    <rect x="0" y="0" rx="2" ry="2" width="5" height="90" />
+    <rect x="95" y="0" rx="2" ry="2" width="5" height="90" />
+
+    {/* content */}
+    <rect x="10" y="14" rx="2" ry="2" width="25" height="2" />
+    <rect x="70" y="10" rx="5" ry="5" width="20" height="10" />
+    <rect x="10" y="25" rx="2" ry="2" width="80" height="35" />
+    <rect x="10" y="65" rx="2" ry="2" width="80" height="15" />
+  </ContentLoader>
+);
+
 const Devices = () => {
   const { data, loading, error } = useQuery(ALL_DEVICES);
-
   return (
     <div>
       <PageHeader>DEVICES</PageHeader>
       {error && <div>{error.message}</div>}
-      {loading && <div>loading devices...</div>}
       <GridContainer>
+        {loading && Array(4).fill(<DeviceLoader />)}
         {!!data &&
           data.allDevices.map(({ deviceId, status = 'OFF', name }) => (
             <Device key={deviceId}>
