@@ -13,8 +13,8 @@ import Spinner from 'react-spinkit';
 // Main core
 import DashboardLayout from 'components/dashboard-layout';
 
-const Dashboard = lazy(() => import('pages/dashboard'));
-const Devices = lazy(() => import('pages/devices'));
+const Statistic = lazy(() => import('components/statistic/page'));
+const Devices = lazy(() => import('components/devices/list-page'));
 
 // ==================================
 const PageLoading = styled(Spinner)`
@@ -42,7 +42,7 @@ const App = () => {
     <BrowserRouter>
       <Switch>
         <AppRoute exact path="/devices" Component={Devices} Layout={DashboardLayout} />
-        <AppRoute exact path="/" Component={Dashboard} Layout={DashboardLayout} />
+        <AppRoute exact path="/" Component={Statistic} Layout={DashboardLayout} />
       </Switch>
     </BrowserRouter>
   );

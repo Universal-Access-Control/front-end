@@ -1,8 +1,8 @@
 // React
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 // Apollo
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 // Tailwindcss
 import tw, { styled, theme } from 'twin.macro';
@@ -19,18 +19,10 @@ import { FiSettings } from 'react-icons/fi';
 // React-Content-Loader
 import ContentLoader from 'react-content-loader';
 
-// ===========================================
-const ALL_DEVICES = gql`
-  query {
-    allDevices {
-      deviceId
-      name
-      isActive
-      registered
-    }
-  }
-`;
+// Main core
+import { ALL_DEVICES_QUERY } from 'gql/devices-gql';
 
+// ===========================================
 const PageHeader = tw.div`mt-8 mb-6 text-gray-800 font-bold capitalize text-xl md:text-2xl`;
 const GridContainer = tw.div`
   grid grid-cols-1 gap-6
@@ -76,13 +68,27 @@ const DeviceLoader = () => (
 );
 
 const Devices = () => {
-  const { data, loading, error } = useQuery(ALL_DEVICES);
+  const NUM_OF_RETRY = useRef(0);
+  const RETRY_TIME = useRef(0);
+  const { data, loading, error, startPolling, stopPolling } = useQuery(ALL_DEVICES_QUERY);
+
+  useEffect(() => {
+    if (error && !RETRY_TIME.current && NUM_OF_RETRY.current < 5) {
+      RETRY_TIME.current = 10000;
+      NUM_OF_RETRY.current += 1;
+      startPolling(RETRY_TIME.current);
+    } else if (!error) {
+      RETRY_TIME.current = 0;
+      NUM_OF_RETRY.current = 0;
+      stopPolling();
+    }
+  }, [error, startPolling, stopPolling]);
+
   return (
     <div>
       <PageHeader>DEVICES</PageHeader>
-      {error && <div>{error.message}</div>}
       <GridContainer>
-        {loading && Array(4).fill(<DeviceLoader />)}
+        {(loading || error) && Array.from({ length: 4 }, (_, i) => <DeviceLoader key={i} />)}
         {!!data &&
           data.allDevices.map(({ deviceId, status = 'OFF', name }) => (
             <Device key={deviceId}>
