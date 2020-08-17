@@ -1,5 +1,5 @@
 // React
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Apollo
 import { useQuery } from '@apollo/client';
@@ -14,10 +14,16 @@ import { ifProp } from 'styled-tools';
 import { truncate } from 'lodash';
 
 // React-Icons
-import { FiSettings } from 'react-icons/fi';
+import { FiCpu } from 'react-icons/fi';
 
 // React-Content-Loader
 import ContentLoader from 'react-content-loader';
+
+// React-Modal
+import ReactModal from 'react-modal';
+
+// React-Spring
+import { config, Transition } from 'react-spring/renderprops';
 
 // Main core
 import { ALL_DEVICES_QUERY } from 'gql/devices-gql';
@@ -45,6 +51,52 @@ const DeviceSettingButton = tw.button`
   flex items-center justify-center gap-2
   hover:bg-gray-800
 `;
+const DeviceViewModal = styled(ReactModal)`
+  ${tw`absolute inline-block w-full max-w-xl px-8 py-4 bg-white rounded-lg`}
+
+  .header {
+    ${tw`flex flex-no-wrap items-center mb-4 text-2xl font-bold`}
+
+    .header__icon {
+      ${tw`mr-2`}
+    }
+  }
+
+  .content {
+    ${tw`flex flex-col`}
+
+    label {
+      ${tw`my-2 text-gray-700 cursor-pointer select-none`}
+    }
+
+    input[type="text"] {
+      ${tw`block w-full px-4 py-2 mt-2`}
+      ${tw`text-gray-800 bg-gray-200 border border-gray-300 rounded`}
+      ${tw`focus:(outline-none bg-white)`}
+    }
+
+    input[type="checkbox"] {
+      ${tw`mr-2 cursor-pointer`}
+    }
+  }
+
+
+  .form-actions {
+    ${tw`flex justify-end mt-4`}
+
+    .btn {
+      ${tw`px-4 py-2 ml-2 rounded`}
+    }
+    .btn-cancel {
+      ${tw`text-gray-600`}
+      ${tw`hocus:(bg-gray-300 outline-none bg-gray-300)`}
+    }
+    .btn-update {
+      ${tw`text-gray-100 bg-green-600`}
+      ${tw`hocus:(bg-green-500 outline-none bg-green-500)`}
+    }
+  }
+`;
 
 const DeviceLoader = () => (
   <ContentLoader
@@ -67,10 +119,72 @@ const DeviceLoader = () => (
   </ContentLoader>
 );
 
+const DeviceView = ({ open, onClose }) => {
+  return (
+    <Transition
+      items={open}
+      config={config.stiff}
+      from={{ opacity: 0, transform: 'translate(-50%, 0%)', top: '0%', left: '50%' }}
+      enter={{ opacity: 1, transform: 'translate(-50%, -50%)', top: '50%', left: '50%' }}
+      leave={{ opacity: 0, transform: 'translate(-50%, 0%)', top: '0%', left: '50%' }}
+    >
+      {(show) =>
+        show &&
+        (({ opacity, ...styles }) => (
+          <DeviceViewModal
+            isOpen
+            shouldCloseOnEsc
+            shouldCloseOnOverlayClick
+            ariaHideApp={false}
+            shouldFocusAfterRender={false}
+            style={{ overlay: { opacity }, content: { ...styles } }}
+            onRequestClose={onClose}
+          >
+            <form>
+              <h1 className="header">
+                <FiCpu className="header__icon" /> Details
+              </h1>
+              <div className="content">
+                <label htmlFor="deviceId">
+                  Device Id
+                  <input id="deviceId" type="text" />
+                </label>
+
+                <label htmlFor="DeviceName">
+                  Name
+                  <input id="DeviceName" type="text" />
+                </label>
+
+                <label htmlFor="DeviceActiveState" tw="self-start">
+                  <input type="checkbox" id="DeviceActiveState" />
+                  Active
+                </label>
+              </div>
+
+              <div className="form-actions">
+                <button className="btn btn-cancel" type="button" onClick={onClose}>
+                  Cancel
+                </button>
+                <button className="btn btn-update" type="submit">
+                  update
+                </button>
+              </div>
+            </form>
+          </DeviceViewModal>
+        ))
+      }
+    </Transition>
+  );
+};
+
 const Devices = () => {
   const NUM_OF_RETRY = useRef(0);
   const RETRY_TIME = useRef(0);
   const { data, loading, error, startPolling, stopPolling } = useQuery(ALL_DEVICES_QUERY);
+  const [currentDeviceId, setCurrentDeviceId] = useState(null);
+
+  const handleOpenDetails = (id) => () => setCurrentDeviceId(id);
+  const handleCloseDetails = () => setCurrentDeviceId(null);
 
   useEffect(() => {
     if (error && !RETRY_TIME.current && NUM_OF_RETRY.current < 5) {
@@ -85,26 +199,36 @@ const Devices = () => {
   }, [error, startPolling, stopPolling]);
 
   return (
-    <div>
+    <>
       <PageHeader>DEVICES</PageHeader>
       <GridContainer>
         {(loading || error) && Array.from({ length: 4 }, (_, i) => <DeviceLoader key={i} />)}
-        {!!data &&
-          data.allDevices.map(({ deviceId, status = 'OFF', name }) => (
-            <Device key={deviceId}>
-              <StatusWrapper>
-                <StatusLabel>Status</StatusLabel>
-                <Status>{status}</Status>
-              </StatusWrapper>
-              <DeviceName>{truncate(name, { length: 10 })}</DeviceName>
-              <DeviceSettingButton type="button">
-                <FiSettings />
-                Settings
-              </DeviceSettingButton>
-            </Device>
-          ))}
+        {!!data && (
+          <Transition
+            trail={100}
+            items={data.allDevices}
+            keys={(item) => item.deviceId}
+            from={{ transform: 'translate3d(0,40px,0)', opacity: 0 }}
+            enter={{ transform: 'translate3d(0,0px,0)', opacity: 1 }}
+          >
+            {({ deviceId, status = 'OFF', name }) => (styles) => (
+              <Device style={styles}>
+                <StatusWrapper>
+                  <StatusLabel>Status</StatusLabel>
+                  <Status>{status}</Status>
+                </StatusWrapper>
+                <DeviceName>{truncate(name, { length: 10 })}</DeviceName>
+                <DeviceSettingButton type="button" onClick={handleOpenDetails(deviceId)}>
+                  <FiCpu />
+                  Details
+                </DeviceSettingButton>
+                <DeviceView open={currentDeviceId === deviceId} onClose={handleCloseDetails} />
+              </Device>
+            )}
+          </Transition>
+        )}
       </GridContainer>
-    </div>
+    </>
   );
 };
 

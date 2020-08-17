@@ -7,6 +7,9 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 // Tailwind
 import tw, { theme, styled } from 'twin.macro';
 
+// Styled-Components
+import { createGlobalStyle } from 'styled-components';
+
 // React-Spinkit
 import Spinner from 'react-spinkit';
 
@@ -17,6 +20,11 @@ const Statistic = lazy(() => import('components/statistic/page'));
 const Devices = lazy(() => import('components/devices/list-page'));
 
 // ==================================
+const GlobalStyles = createGlobalStyle`
+  .ReactModal__Overlay {
+    ${tw`bg-gray-700! bg-opacity-75!`}
+  }
+`;
 const PageLoading = styled(Spinner)`
   ${tw`flex justify-center p-4 mt-10`}
   & > div {
@@ -40,6 +48,7 @@ const AppRoute = ({ Component, Layout, ...routerProps }) => (
 const App = () => {
   return (
     <BrowserRouter>
+      <GlobalStyles />
       <Switch>
         <AppRoute exact path="/devices" Component={Devices} Layout={DashboardLayout} />
         <AppRoute exact path="/" Component={Statistic} Layout={DashboardLayout} />

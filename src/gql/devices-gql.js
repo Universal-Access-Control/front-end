@@ -7,7 +7,6 @@ export const ALL_DEVICES_QUERY = gql`
       deviceId
       name
       isActive
-      registered
     }
   }
 `;
