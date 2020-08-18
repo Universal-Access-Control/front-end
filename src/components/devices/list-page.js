@@ -14,7 +14,7 @@ import { ifProp } from 'styled-tools';
 import { truncate } from 'lodash';
 
 // React-Icons
-import { FiCpu } from 'react-icons/fi';
+import { FiCpu, FiPlus } from 'react-icons/fi';
 
 // React-Content-Loader
 import ContentLoader from 'react-content-loader';
@@ -29,7 +29,15 @@ import { config, Transition } from 'react-spring/renderprops';
 import { ALL_DEVICES_QUERY } from 'gql/devices-gql';
 
 // ===========================================
-const PageHeader = tw.div`mt-8 mb-6 text-gray-800 font-bold capitalize text-xl md:text-2xl`;
+const PageHeader = tw.h1`
+  flex justify-between mt-8 mb-6 text-xl
+  font-bold text-gray-800 capitalize md:text-2xl
+`;
+const AddButton = tw.button`
+  flex gap-1 items-center px-3 py-1 ml-2 rounded
+  text-gray-100 text-base font-normal bg-green-600
+  hover:bg-green-500 focus:outline-none
+`;
 const GridContainer = tw.div`
   grid grid-cols-1 gap-6
   sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6
@@ -45,14 +53,14 @@ const DeviceName = tw.div`
   mt-2 px-4 font-semibold whitespace-no-wrap
   text-gray-800 text-2xl text-center
 `;
-const DeviceSettingButton = tw.button`
+const DeviceDetailsButton = tw.button`
   w-full px-4 py-2 mt-4 rounded-b-lg bg-gray-900
   text-gray-100 text-sm
   flex items-center justify-center gap-2
-  hover:bg-gray-800
+  hover:bg-gray-800 focus:outline-none
 `;
 const DeviceViewModal = styled(ReactModal)`
-  ${tw`absolute inline-block w-full max-w-xl px-8 py-4 bg-white rounded-lg`}
+  ${tw`absolute inline-block w-full max-w-xl px-8 py-4 bg-white rounded-lg focus:outline-none`}
 
   .header {
     ${tw`flex flex-no-wrap items-center mb-4 text-2xl font-bold`}
@@ -75,6 +83,10 @@ const DeviceViewModal = styled(ReactModal)`
       ${tw`focus:(outline-none bg-white)`}
     }
 
+    input[disabled] {
+      ${tw`text-gray-500`}
+    }
+
     input[type="checkbox"] {
       ${tw`mr-2 cursor-pointer`}
     }
@@ -91,9 +103,9 @@ const DeviceViewModal = styled(ReactModal)`
       ${tw`text-gray-600`}
       ${tw`hocus:(bg-gray-300 outline-none bg-gray-300)`}
     }
-    .btn-update {
+    .btn-success {
       ${tw`text-gray-100 bg-green-600`}
-      ${tw`hocus:(bg-green-500 outline-none bg-green-500)`}
+      ${tw`hocus:(bg-green-500 outline-none)`}
     }
   }
 `;
@@ -119,7 +131,21 @@ const DeviceLoader = () => (
   </ContentLoader>
 );
 
-const DeviceView = ({ open, onClose }) => {
+const DeviceView = ({ open, device, onClose, onSubmit }) => {
+  const DEFAULT_INFO = { deviceId: '', name: '', isActive: true };
+  const [info, setInfo] = useState(device || DEFAULT_INFO);
+
+  const handleChange = (e) => {
+    const { checked, name, value, type } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    setInfo((lastInfo) => ({ ...lastInfo, [name]: newValue }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(info);
+  };
+
   return (
     <Transition
       items={open}
@@ -140,23 +166,29 @@ const DeviceView = ({ open, onClose }) => {
             style={{ overlay: { opacity }, content: { ...styles } }}
             onRequestClose={onClose}
           >
-            <form>
+            <form onSubmit={handleSubmit}>
               <h1 className="header">
                 <FiCpu className="header__icon" /> Details
               </h1>
               <div className="content">
                 <label htmlFor="deviceId">
                   Device Id
-                  <input id="deviceId" type="text" />
+                  <input id="deviceId" type="text" name="deviceId" value={info.deviceId} disabled={!!device} />
                 </label>
 
                 <label htmlFor="DeviceName">
                   Name
-                  <input id="DeviceName" type="text" />
+                  <input id="DeviceName" type="text" name="name" onChange={handleChange} value={info.name} />
                 </label>
 
                 <label htmlFor="DeviceActiveState" tw="self-start">
-                  <input type="checkbox" id="DeviceActiveState" />
+                  <input
+                    type="checkbox"
+                    id="DeviceActiveState"
+                    name="isActive"
+                    onChange={handleChange}
+                    checked={info.isActive}
+                  />
                   Active
                 </label>
               </div>
@@ -165,8 +197,8 @@ const DeviceView = ({ open, onClose }) => {
                 <button className="btn btn-cancel" type="button" onClick={onClose}>
                   Cancel
                 </button>
-                <button className="btn btn-update" type="submit">
-                  update
+                <button className="btn btn-success" type="submit">
+                  {device ? 'Update' : 'Add'}
                 </button>
               </div>
             </form>
@@ -178,13 +210,20 @@ const DeviceView = ({ open, onClose }) => {
 };
 
 const Devices = () => {
+  const NEW_DEVICE_ID = 'AC-New-8930417793';
   const NUM_OF_RETRY = useRef(0);
   const RETRY_TIME = useRef(0);
   const { data, loading, error, startPolling, stopPolling } = useQuery(ALL_DEVICES_QUERY);
   const [currentDeviceId, setCurrentDeviceId] = useState(null);
 
-  const handleOpenDetails = (id) => () => setCurrentDeviceId(id);
-  const handleCloseDetails = () => setCurrentDeviceId(null);
+  const handleOpenDeviceModal = (id) => () => setCurrentDeviceId(id);
+  const handleCloseDeviceModal = () => setCurrentDeviceId(null);
+  const handleAddDevice = (device) => {
+    // TODO: Add Device
+  };
+  const handleUpdateDevice = (device) => {
+    // TODO: Update Device
+  };
 
   useEffect(() => {
     if (error && !RETRY_TIME.current && NUM_OF_RETRY.current < 5) {
@@ -200,7 +239,18 @@ const Devices = () => {
 
   return (
     <>
-      <PageHeader>DEVICES</PageHeader>
+      <PageHeader>
+        DEVICES
+        <AddButton type="button" onClick={handleOpenDeviceModal(NEW_DEVICE_ID)}>
+          <FiPlus />
+          Add
+        </AddButton>
+        <DeviceView
+          open={currentDeviceId === NEW_DEVICE_ID}
+          onClose={handleCloseDeviceModal}
+          onSubmit={handleAddDevice}
+        />
+      </PageHeader>
       <GridContainer>
         {(loading || error) && Array.from({ length: 4 }, (_, i) => <DeviceLoader key={i} />)}
         {!!data && (
@@ -211,18 +261,23 @@ const Devices = () => {
             from={{ transform: 'translate3d(0,40px,0)', opacity: 0 }}
             enter={{ transform: 'translate3d(0,0px,0)', opacity: 1 }}
           >
-            {({ deviceId, status = 'OFF', name }) => (styles) => (
+            {({ deviceId, status = 'OFF', name, isActive }) => (styles) => (
               <Device style={styles}>
                 <StatusWrapper>
                   <StatusLabel>Status</StatusLabel>
                   <Status>{status}</Status>
                 </StatusWrapper>
                 <DeviceName>{truncate(name, { length: 10 })}</DeviceName>
-                <DeviceSettingButton type="button" onClick={handleOpenDetails(deviceId)}>
+                <DeviceDetailsButton type="button" onClick={handleOpenDeviceModal(deviceId)}>
                   <FiCpu />
                   Details
-                </DeviceSettingButton>
-                <DeviceView open={currentDeviceId === deviceId} onClose={handleCloseDetails} />
+                </DeviceDetailsButton>
+                <DeviceView
+                  open={currentDeviceId === deviceId}
+                  device={{ deviceId, name, isActive }}
+                  onClose={handleCloseDeviceModal}
+                  onSubmit={handleUpdateDevice}
+                />
               </Device>
             )}
           </Transition>
