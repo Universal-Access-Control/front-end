@@ -13,7 +13,7 @@ import { ifProp } from 'styled-tools';
 // ===============================================
 const HeaderContainer = tw.header`mb-4 shadow px-6 py-3 bg-white rounded-lg`;
 const Flex = tw.div`flex justify-between items-center`;
-const Avatar = tw.img`w-10 h-10 rounded-full border-2 border-gray-400`;
+const Avatar = tw.object`w-10 h-10 rounded-full border-2 border-gray-400 bg-gray-200`;
 const Button = styled.button`
   ${tw`hidden px-2 py-1 mx-1 text-sm text-gray-600 rounded-lg md:block`}
   ${tw`transition-colors duration-300`}
@@ -36,7 +36,7 @@ const DashboardHeader = () => {
         </Flex>
         <Flex>
           <Button>Mohammad</Button>
-          <Avatar src="https://i.pravatar.cc/150?img=12" alt="name" />
+          <Avatar data="https://source.unsplash.com/MTZTGvDsHFY/300x300" type="image/jpg" />
         </Flex>
       </Flex>
     </HeaderContainer>

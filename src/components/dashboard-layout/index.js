@@ -26,4 +26,5 @@ const DashboardLayout = ({ children }) => {
     </GridContainer>
   );
 };
+
 export default DashboardLayout;
