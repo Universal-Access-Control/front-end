@@ -13,6 +13,8 @@ module.exports = {
       gridTemplateColumns: {
         layout: 'auto 1fr',
       },
+      minWidth: (theme) => theme('maxWidth'),
+      minHeight: (theme) => theme('maxWidth'),
     },
   },
   variants: {},

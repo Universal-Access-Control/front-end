@@ -1,5 +1,5 @@
 // React
-import React, { lazy, Suspense } from 'react';
+import React, { Fragment, lazy, Suspense } from 'react';
 
 // React-Router
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -15,9 +15,12 @@ import Spinner from 'react-spinkit';
 
 // Main core
 import DashboardLayout from 'components/dashboard-layout';
+import AuthLayout from 'components/auth/layout';
 
 const Statistic = lazy(() => import('components/statistic/page'));
 const Devices = lazy(() => import('components/devices/list-page'));
+const Register = lazy(() => import('components/auth/register-page'));
+const Login = lazy(() => import('components/auth/login-page'));
 
 // ==================================
 const GlobalStyles = createGlobalStyle`
@@ -26,13 +29,13 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 const PageLoading = styled(Spinner)`
-  ${tw`flex justify-center p-4 mt-10`}
+  ${tw`flex justify-center flex-1 p-4 mt-10`}
   & > div {
     ${tw`w-10 h-10`}
   }
 `;
 
-const AppRoute = ({ Component, Layout, ...routerProps }) => (
+const AppRoute = ({ Component, Layout = Fragment, ...routerProps }) => (
   <Route
     {...routerProps}
     render={(props) => (
@@ -50,8 +53,13 @@ const App = () => {
     <BrowserRouter>
       <GlobalStyles />
       <Switch>
+        <AppRoute exact path="/login" Component={Login} Layout={AuthLayout} />
+        <AppRoute exact path="/register" Component={Register} Layout={AuthLayout} />
         <AppRoute exact path="/devices" Component={Devices} Layout={DashboardLayout} />
         <AppRoute exact path="/" Component={Statistic} Layout={DashboardLayout} />
+        <Route path="*">
+          <div>404 NOT FOUND</div>
+        </Route>
       </Switch>
     </BrowserRouter>
   );
