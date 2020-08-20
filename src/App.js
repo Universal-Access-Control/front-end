@@ -19,9 +19,10 @@ import AuthLayout from 'components/auth/layout';
 
 const Register = lazy(() => import('components/auth/register-page'));
 const Login = lazy(() => import('components/auth/login-page'));
-const Statistic = lazy(() => import('components/statistic/page'));
+const Statistic = lazy(() => import('components/statistic/statistic-page'));
 const Devices = lazy(() => import('components/devices/list-page'));
 const Profile = lazy(() => import('components/profile/profile-page'));
+const Settings = lazy(() => import('components/settings/settings-page'));
 
 // ==================================
 const GlobalStyles = createGlobalStyle`
@@ -59,6 +60,7 @@ const App = () => {
         <AppRoute path="/register" Component={Register} Layout={AuthLayout} />
         <AppRoute path="/devices" Component={Devices} Layout={DashboardLayout} />
         <AppRoute path="/profile" Component={Profile} Layout={DashboardLayout} />
+        <AppRoute path="/settings" Component={Settings} Layout={DashboardLayout} />
         <AppRoute path="/" Component={Statistic} Layout={DashboardLayout} />
         <Route path="*">
           <div>404 NOT FOUND</div>
