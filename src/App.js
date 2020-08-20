@@ -17,10 +17,11 @@ import Spinner from 'react-spinkit';
 import DashboardLayout from 'components/dashboard-layout';
 import AuthLayout from 'components/auth/layout';
 
-const Statistic = lazy(() => import('components/statistic/page'));
-const Devices = lazy(() => import('components/devices/list-page'));
 const Register = lazy(() => import('components/auth/register-page'));
 const Login = lazy(() => import('components/auth/login-page'));
+const Statistic = lazy(() => import('components/statistic/page'));
+const Devices = lazy(() => import('components/devices/list-page'));
+const Profile = lazy(() => import('components/profile/profile-page'));
 
 // ==================================
 const GlobalStyles = createGlobalStyle`
@@ -38,6 +39,7 @@ const PageLoading = styled(Spinner)`
 const AppRoute = ({ Component, Layout = Fragment, ...routerProps }) => (
   <Route
     {...routerProps}
+    exact
     render={(props) => (
       <Layout>
         <Suspense fallback={<PageLoading name="pulse" color={theme`colors.gray.600`} />}>
@@ -53,10 +55,11 @@ const App = () => {
     <BrowserRouter>
       <GlobalStyles />
       <Switch>
-        <AppRoute exact path="/login" Component={Login} Layout={AuthLayout} />
-        <AppRoute exact path="/register" Component={Register} Layout={AuthLayout} />
-        <AppRoute exact path="/devices" Component={Devices} Layout={DashboardLayout} />
-        <AppRoute exact path="/" Component={Statistic} Layout={DashboardLayout} />
+        <AppRoute path="/login" Component={Login} Layout={AuthLayout} />
+        <AppRoute path="/register" Component={Register} Layout={AuthLayout} />
+        <AppRoute path="/devices" Component={Devices} Layout={DashboardLayout} />
+        <AppRoute path="/profile" Component={Profile} Layout={DashboardLayout} />
+        <AppRoute path="/" Component={Statistic} Layout={DashboardLayout} />
         <Route path="*">
           <div>404 NOT FOUND</div>
         </Route>
