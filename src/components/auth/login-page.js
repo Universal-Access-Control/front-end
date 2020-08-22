@@ -38,11 +38,9 @@ import Label from 'components/form/label';
 import Button from 'components/form/button';
 
 // ===================================
-const PASSWORD_REGEX = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
-const PASSWORD_MESSAGE = 'Password must be at least contains both number and letter';
 const loginSchema = yup.object().shape({
   email: yup.string().required().email(),
-  password: yup.string().required().min(8).max(30).matches(PASSWORD_REGEX, PASSWORD_MESSAGE),
+  password: yup.string().required(),
 });
 const FormContainer = tw.form`w-full py-8 px-6 md:px-8 lg:w-1/2`;
 const Header = tw.h1`text-2xl font-semibold text-gray-700 text-center`;
