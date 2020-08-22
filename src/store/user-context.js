@@ -5,7 +5,7 @@ import React, { createContext, useState, useRef, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
 
 // Main core
-import { GET_USER } from 'gql/user-gql';
+import { GET_USER_QUERY } from 'gql/user-gql';
 
 // ======================================
 export const UserContext = createContext({
@@ -19,7 +19,7 @@ export const UserConsumer = UserContext.Consumer;
 const UserContextWrapper = ({ children }) => {
   const RETRY_TIME = useRef(0);
   const [user, setUser] = useState(null);
-  const [fetchUser, { called, loading, data, error, client, stopPolling, startPolling }] = useLazyQuery(GET_USER);
+  const [fetchUser, { called, loading, data, error, client, stopPolling, startPolling }] = useLazyQuery(GET_USER_QUERY);
 
   useEffect(() => {
     if (!called && error && !RETRY_TIME.current) {
