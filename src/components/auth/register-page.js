@@ -77,7 +77,7 @@ const RegisterPage = () => {
         </Label>
         <Input id="RegisterPassword" type="password" />
 
-        <Button fullWidth variant="dark" tw="mt-8" type="button">
+        <Button fullWidth variant="dark" tw="mt-6" type="button">
           Register
         </Button>
 
