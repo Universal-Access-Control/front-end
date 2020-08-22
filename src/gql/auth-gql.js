@@ -27,3 +27,9 @@ export const RegisterMutation = gql`
     }
   }
 `;
+
+export const LogoutMutation = gql`
+  mutation {
+    logout
+  }
+`;
