@@ -87,7 +87,7 @@ const ErrorToastBody = ({ title, errors }) => {
 };
 
 const LoginPage = () => {
-  const styles = useSpring({ from: { opacity: 0 }, to: { opacity: 1 } });
+  const styles = useSpring({ from: { opacity: 0 }, to: { opacity: 1 }, config: { duration: 500 } });
   const { register, handleSubmit, errors } = useForm({ resolver: yupResolver(loginSchema) });
   const [login, { loading }] = useMutation(LoginMutation);
   const { updateUser } = useContext(UserContext);

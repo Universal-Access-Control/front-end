@@ -18,3 +18,12 @@ export const LoginMutation = gql`
     }
   }
 `;
+
+export const RegisterMutation = gql`
+  mutation($email: String!, $password: String!) {
+    register(user: { email: $email, password: $password }) {
+      _id
+      email
+    }
+  }
+`;
