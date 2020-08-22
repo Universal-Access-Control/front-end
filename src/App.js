@@ -13,6 +13,9 @@ import { createGlobalStyle } from 'styled-components';
 // React-Spinkit
 import Spinner from 'react-spinkit';
 
+// React-toastify
+import { ToastContainer } from 'react-toastify';
+
 // Main core
 import DashboardLayout from 'components/dashboard-layout';
 import AuthLayout from 'components/auth/layout';
@@ -36,6 +39,11 @@ const PageLoading = styled(Spinner)`
     ${tw`w-10 h-10`}
   }
 `;
+const ToastContainerStyled = styled(ToastContainer)`
+  .Toastify__toast {
+    ${tw`rounded`}
+  }
+`;
 
 const AppRoute = ({ Component, Layout = Fragment, ...routerProps }) => (
   <Route
@@ -55,6 +63,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <GlobalStyles />
+      <ToastContainerStyled />
       <Switch>
         <AppRoute path="/login" Component={Login} Layout={AuthLayout} />
         <AppRoute path="/register" Component={Register} Layout={AuthLayout} />

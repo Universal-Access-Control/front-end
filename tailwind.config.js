@@ -15,6 +15,7 @@ module.exports = {
       },
       minWidth: (theme) => theme('maxWidth'),
       minHeight: (theme) => theme('maxWidth'),
+      maxHeight: (theme) => theme('maxWidth'),
     },
   },
   variants: {},
