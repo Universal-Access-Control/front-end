@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // Apollo
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 
 // Tailwindcss
 import tw, { styled, theme } from 'twin.macro';
@@ -22,8 +22,14 @@ import ContentLoader from 'react-content-loader';
 // React-Spring
 import { Transition } from 'react-spring/renderprops';
 
+// React-Toastify
+import { toast } from 'react-toastify';
+
+// React-Router
+import { useHistory } from 'react-router-dom';
+
 // Main core
-import { ALL_DEVICES_QUERY } from 'gql/devices-gql';
+import { ADD_DEVICE_MUTATION, ALL_DEVICES_QUERY, UPDATE_DEVICE_MUTATION } from 'gql/devices-gql';
 import DeviceModal from './device-modal';
 
 // ===========================================
@@ -83,16 +89,35 @@ const Devices = () => {
   const NEW_DEVICE_ID = 'AC-New-8930417793';
   const NUM_OF_RETRY = useRef(0);
   const RETRY_TIME = useRef(0);
-  const { data, loading, error, startPolling, stopPolling } = useQuery(ALL_DEVICES_QUERY);
+  const history = useHistory();
+  const { data, loading, error, startPolling, stopPolling, refetch: refetchDevices } = useQuery(ALL_DEVICES_QUERY);
+  const [addDevice] = useMutation(ADD_DEVICE_MUTATION);
+  const [updateDevice] = useMutation(UPDATE_DEVICE_MUTATION);
   const [currentDeviceId, setCurrentDeviceId] = useState(null);
 
   const handleOpenDeviceModal = (id) => () => setCurrentDeviceId(id);
   const handleCloseDeviceModal = () => setCurrentDeviceId(null);
-  const handleAddDevice = () => {
-    // TODO: Add Device
+  const handleAddDevice = async (device) => {
+    try {
+      await addDevice({ variables: device });
+      refetchDevices();
+      toast.success('Device Created!');
+      handleCloseDeviceModal();
+    } catch (err) {
+      toast.error('Cannot create device!');
+    }
   };
-  const handleUpdateDevice = () => {
-    // TODO: Update Device
+  const handleUpdateDevice = async (device) => {
+    try {
+      await updateDevice({ variables: device });
+      refetchDevices();
+      toast.success('Device Updated!');
+      handleCloseDeviceModal();
+      return true;
+    } catch (err) {
+      toast.error('Cannot update device!');
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -106,6 +131,16 @@ const Devices = () => {
       stopPolling();
     }
   }, [error, startPolling, stopPolling]);
+
+  useEffect(() => {
+    const unRegisterListener = history.listen((location) => {
+      if (location.pathname === '/devices') {
+        refetchDevices();
+      }
+    });
+
+    return () => unRegisterListener();
+  }, [history, refetchDevices]);
 
   return (
     <>
@@ -131,7 +166,7 @@ const Devices = () => {
             from={{ transform: 'translate3d(0,40px,0)', opacity: 0 }}
             enter={{ transform: 'translate3d(0,0px,0)', opacity: 1 }}
           >
-            {({ deviceId, status = 'OFF', name, isActive }) => (styles) => (
+            {({ _id, deviceId, status = 'OFF', name, isActive }) => (styles) => (
               <Device style={styles}>
                 <StatusWrapper>
                   <StatusLabel>Status</StatusLabel>
@@ -144,7 +179,7 @@ const Devices = () => {
                 </DeviceDetailsButton>
                 <DeviceModal
                   open={currentDeviceId === deviceId}
-                  device={{ deviceId, name, isActive }}
+                  device={{ deviceId, name, isActive, _id }}
                   onClose={handleCloseDeviceModal}
                   onSubmit={handleUpdateDevice}
                 />

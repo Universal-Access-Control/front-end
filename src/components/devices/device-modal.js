@@ -40,9 +40,9 @@ const Button = styled.button`
 `;
 
 const DeviceModal = ({ open, device, onClose, onSubmit }) => {
-  const DEFAULT_INFO = { deviceId: '', name: '', isActive: true };
+  const DEFAULT_INFO = device || { deviceId: '', name: '', isActive: true };
   const isAddDevice = !device;
-  const [info, setInfo] = useState(device || DEFAULT_INFO);
+  const [info, setInfo] = useState(DEFAULT_INFO);
 
   const handleChange = (e) => {
     const { checked, name, value, type } = e.target;
@@ -50,9 +50,13 @@ const DeviceModal = ({ open, device, onClose, onSubmit }) => {
     setInfo((lastInfo) => ({ ...lastInfo, [name]: newValue }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(info);
+    // eslint-disable-next-line no-underscore-dangle
+    const isSuccessfully = await onSubmit({ id: device?._id, ...info });
+    if (!device && isSuccessfully) {
+      setInfo(DEFAULT_INFO);
+    }
   };
 
   return (

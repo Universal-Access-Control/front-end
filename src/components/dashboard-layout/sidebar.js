@@ -2,7 +2,7 @@
 import React, { Fragment, useState } from 'react';
 
 // React-Router
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 // Tailwindcss
 import tw, { styled } from 'twin.macro';
@@ -14,7 +14,14 @@ import { ifProp } from 'styled-tools';
 import { FiGrid, FiSettings, FiUser } from 'react-icons/fi';
 import { GoPlus } from 'react-icons/go';
 
+// Apollo
+import { useMutation } from '@apollo/client';
+
+// React-Toastify
+import { toast } from 'react-toastify';
+
 // Main core
+import { ADD_DEVICE_MUTATION } from 'gql/devices-gql';
 import DeviceModal from 'components/devices/device-modal';
 
 // ===========================================
@@ -40,7 +47,9 @@ const Brand = styled.h1`
 
 const Sidebar = () => {
   const location = useLocation();
+  const history = useHistory();
   const [openDeviceModal, setOpenDeviceModal] = useState(false);
+  const [addDevice] = useMutation(ADD_DEVICE_MUTATION);
   const routes = {
     Manage: [
       { title: 'Devices', icon: FiGrid, href: '/devices' },
@@ -64,8 +73,17 @@ const Sidebar = () => {
     return () => setOpenDeviceModal(open);
   }
 
-  function handleAddDevice(device) {
-    // TODO: Add Device
+  async function handleAddDevice(device) {
+    try {
+      await addDevice({ variables: device });
+      toast.success('Device Created!');
+      handleOpenDeviceModal(false)();
+      history.push('/devices');
+      return true;
+    } catch (err) {
+      toast.error('Cannot create device!');
+      return false;
+    }
   }
 
   return (
