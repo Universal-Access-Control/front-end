@@ -1,7 +1,7 @@
 Before start working on this project, make sure you installed [Nodejs](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com/) in your machine.
 
 ## Run Project
-For running this project, fallow the steps below:
+For running this project, follow the steps below:
 > 1. git clone https://github.com/Universal-Access-Control/front-end.git
 > 2. cd front-end
 > 3. yarn install
